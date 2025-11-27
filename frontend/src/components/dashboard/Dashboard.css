@@ -1,0 +1,289 @@
+/* Dashboard.css */
+:root {
+  --primary-color: #ff0000; /* Rouge de l'en-tête (FTF) */
+  --secondary-color: #f3f4f6; /* Gris clair pour les cartes */
+  --accent-positive: #10b981; /* Vert pour "Validées" */
+  --accent-neutral: #f59e0b; /* Orange pour "En attente" */
+  --accent-negative: #ef4444; /* Rouge doux pour "Rejetées" */
+  --text-color: #111827; /* Gris foncé pour le texte principal */
+  --text-subtle: #6b7280; /* Gris moyen pour les sous-titres */
+  --border-color: #e5e7eb; /* Bordure légère */
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto; /* Centre horizontalement le conteneur principal */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre les enfants horizontalement */
+}
+
+/* En-tête */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Prend toute la largeur disponible */
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-content h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.header-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-subtle);
+  letter-spacing: 0.5px;
+}
+
+.refresh-btn {
+  padding: 0.5rem 1rem;
+  background: #2563eb; /* Bleu pour le bouton */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.refresh-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+/* Grille des statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 colonnes égales */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center; /* Centre les colonnes horizontalement */
+  max-width: 1000px; /* Limite la largeur totale */
+  width: 100%; /* Prend toute la largeur disponible dans les limites */
+}
+
+.stat-card {
+  background: var(--secondary-color);
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Assure une hauteur uniforme */
+}
+
+.stat-card h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 1.25rem; /* Taille plus grande pour les valeurs */
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* Grille des graphiques */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 colonnes égales */
+  gap: 1.5rem;
+  justify-content: center; /* Centre les graphiques horizontalement */
+  max-width: 1000px; /* Limite la largeur totale */
+  width: 100%; /* Prend toute la largeur disponible dans les limites */
+  margin-top: 1.5rem;
+}
+
+.chart-card {
+  background: var(--secondary-color);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chart-card h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* État de chargement */
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.skeleton-loader {
+  width: 100%;
+  max-width: 800px;
+}
+
+.skeleton-header,
+.skeleton-stats,
+.skeleton-charts {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-header {
+  height: 60px;
+  width: 50%;
+}
+
+.skeleton-stats {
+  height: 120px;
+}
+
+.skeleton-charts {
+  height: 300px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* État d'erreur */
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 1rem;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: var(--accent-negative);
+}
+
+.error-message {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.retry-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent-negative);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.retry-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* État sans données */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 1rem;
+}
+
+.no-data-icon {
+  font-size: 3rem;
+  color: var(--text-subtle);
+}
+
+.no-data h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.no-data p {
+  font-size: 0.875rem;
+  color: var(--text-subtle);
+}
+
+/* Design responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .stats-grid,
+  .charts-grid {
+    grid-template-columns: 1fr; /* Une colonne sur mobile */
+    max-width: 100%; /* Prend toute la largeur disponible */
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.25rem;
+  }
+
+  .chart-card h2 {
+    font-size: 1rem;
+  }
+}

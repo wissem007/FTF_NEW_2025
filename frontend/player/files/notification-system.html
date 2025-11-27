@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Notifications Amélioré</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .demo-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn.success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .demo-btn.success:hover {
+            background: #45a049;
+        }
+
+        .demo-btn.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .demo-btn.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .demo-btn.info {
+            background: #2196F3;
+            color: white;
+        }
+
+        /* Container pour les notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        /* Style de base pour les toasts */
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        .toast.success::before {
+            background: #4CAF50;
+        }
+
+        .toast.error::before {
+            background: #f44336;
+        }
+
+        .toast.warning::before {
+            background: #ff9800;
+        }
+
+        .toast.info::before {
+            background: #2196F3;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+            color: white;
+        }
+
+        .toast.success .toast-icon {
+            background: #4CAF50;
+        }
+
+        .toast.error .toast-icon {
+            background: #f44336;
+        }
+
+        .toast.warning .toast-icon {
+            background: #ff9800;
+        }
+
+        .toast.info .toast-icon {
+            background: #2196F3;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .toast-message {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .toast-close:hover {
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.removing {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        /* Style alternatif - Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .modal.success .modal-icon {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .modal-button:hover {
+            background: #45a049;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🎨 Système de Notifications Amélioré</h1>
+        <p style="color: #666; margin-bottom: 20px;">
+            Testez différents styles de notifications pour remplacer les alertes basiques.
+        </p>
+
+        <h2 style="margin-top: 30px; margin-bottom: 15px; color: #333;">Notifications Toast (Recommandé)</h2>
+        <div class="demo-buttons">
+            <button class="demo-btn success" onclick="showToast('success', 'Succès !', 'Nouvelle demande créée avec succès !')">
+                ✓ Notification Succès
+            </button>
+            <button class="demo-btn error" onclick="showToast('error', 'Erreur', 'Une erreur est survenue lors de la création.')">
+                ✗ Notification Erreur
+            </button>
+            <button class="demo-btn warning" onclick="showToast('warning', 'Attention', 'Veuillez vérifier les informations.')">
+                ⚠ Notification Avertissement
+            </button>
+            <button class="demo-btn info" onclick="showToast('info', 'Information', 'Les données ont été mises à jour.')">
+                ℹ Notification Info
+            </button>
+        </div>
+
+        <h2 style="margin-top: 30px; margin-bottom: 15px; color: #333;">Modal de Confirmation</h2>
+        <div class="demo-buttons">
+            <button class="demo-btn success" onclick="showModal()">
+                Afficher Modal Succès
+            </button>
+        </div>
+
+        <h2 style="margin-top: 30px; margin-bottom: 15px; color: #333;">Code d'intégration</h2>
+        <p style="color: #666; margin-bottom: 10px;">
+            Pour utiliser les notifications toast dans votre application :
+        </p>
+        <div class="code-block">
+<code>// Appeler simplement cette fonction
+showToast('success', 'Succès !', 'Nouvelle demande créée avec succès !');
+
+// Types disponibles : 'success', 'error', 'warning', 'info'</code>
+        </div>
+    </div>
+
+    <!-- Container pour les toasts -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal success">
+            <div class="modal-icon">✓</div>
+            <div class="modal-title">Succès !</div>
+            <div class="modal-message">Nouvelle demande créée avec succès !</div>
+            <button class="modal-button" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour afficher un toast
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            
+            // Créer l'élément toast
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            // Définir les icônes selon le type
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type]}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="removeToast(this)">×</button>
+            `;
+            
+            // Ajouter au container
+            container.appendChild(toast);
+            
+            // Retirer automatiquement après la durée spécifiée
+            setTimeout(() => {
+                removeToast(toast.querySelector('.toast-close'));
+            }, duration);
+        }
+
+        // Fonction pour retirer un toast
+        function removeToast(button) {
+            const toast = button.closest('.toast');
+            toast.classList.add('removing');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }
+
+        // Fonction pour afficher le modal
+        function showModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // Fonction pour fermer le modal
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // Fermer le modal en cliquant sur l'overlay
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
