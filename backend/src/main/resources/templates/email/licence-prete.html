@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licence Prête</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+            color: #333;
+        }
+        .success-icon {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Votre licence est prête !</h1>
+        </div>
+        
+        <div class="content">
+            <div class="success-icon">🎫</div>
+            
+            <p>Bonjour <strong th:text="${recipientName}">Joueur</strong>,</p>
+            
+            <p>Bonne nouvelle ! Votre licence a été <strong>imprimée</strong> et est maintenant disponible.</p>
+            
+            <div class="info-box">
+                <strong>📋 Détails de la licence</strong><br>
+                Numéro : <span th:text="${demandeId}">123456</span><br>
+                Statut : <span style="color: #007bff; font-weight: bold;">IMPRIMÉE</span>
+            </div>
+            
+            <h3>📍 Comment récupérer votre licence ?</h3>
+            <div style="background-color: #fff3cd; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                <strong>🏢 Adresse :</strong><br>
+                Fédération Tunisienne de Football<br>
+                Rue XYZ, Tunis<br><br>
+                
+                <strong>🕐 Horaires :</strong><br>
+                Lundi - Vendredi : 9h00 - 17h00<br>
+                Samedi : 9h00 - 12h00
+            </div>
+            
+            <h3>📋 Documents à apporter :</h3>
+            <ul>
+                <li>Carte d'identité nationale (CIN)</li>
+                <li>Ce email (imprimé ou sur téléphone)</li>
+            </ul>
+            
+            <p style="text-align: center;">
+                <a href="http://licencesftf.com/demandes" class="button">Voir ma licence</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Fédération Tunisienne de Football</strong></p>
+            <p>📧 support@ftf.tn | 📞 +216 71 123 456</p>
+            <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+        </div>
+    </div>
+</body>
+</html>

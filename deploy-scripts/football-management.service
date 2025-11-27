@@ -1,0 +1,42 @@
+[Unit]
+Description=Football Management Backend - Spring Boot Application
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=football
+Group=football
+WorkingDirectory=/home/football/football-management/backend
+
+# Variables d'environnement
+Environment="JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
+Environment="SPRING_PROFILES_ACTIVE=production"
+Environment="SERVER_PORT=8082"
+
+# Configuration PostgreSQL (à adapter selon votre serveur)
+Environment="DB_HOST=localhost"
+Environment="DB_PORT=5432"
+Environment="DB_NAME=sss_competition_db"
+Environment="DB_USERNAME=your_db_user"
+Environment="DB_PASSWORD=your_db_password"
+
+# Options JVM
+Environment="JAVA_OPTS=-Xms512m -Xmx2048m -XX:+UseG1GC"
+
+# Commande de démarrage
+ExecStart=/usr/bin/java $JAVA_OPTS -jar /home/football/football-management/backend/football-management.jar
+
+# Redémarrage automatique
+Restart=always
+RestartSec=10
+
+# Logs
+StandardOutput=append:/home/football/football-management/logs/application.log
+StandardError=append:/home/football/football-management/logs/error.log
+
+# Sécurité
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

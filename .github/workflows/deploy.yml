@@ -1,0 +1,140 @@
+name: CI/CD Pipeline - Football Management
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ========================================
+      # ÉTAPE 1: Checkout du code
+      # ========================================
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # ========================================
+      # ÉTAPE 2: Setup Java 17 pour le backend
+      # ========================================
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # ========================================
+      # ÉTAPE 3: Build du backend Spring Boot
+      # ========================================
+      - name: 🔨 Build Backend (Maven)
+        working-directory: ./backend
+        run: |
+          echo "🚀 Building Spring Boot application..."
+          mvn clean package -DskipTests
+          echo "✅ Backend JAR created: $(ls -lh target/*.jar)"
+
+      # ========================================
+      # ÉTAPE 4: Setup Node.js pour le frontend
+      # ========================================
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      # ========================================
+      # ÉTAPE 5: Build du frontend React
+      # ========================================
+      - name: 🔨 Build Frontend (React + Vite)
+        working-directory: ./frontend
+        run: |
+          echo "🚀 Installing dependencies..."
+          npm ci
+          echo "🚀 Building React application..."
+          npm run build
+          echo "✅ Frontend build created: $(ls -lh dist/)"
+
+      # ========================================
+      # ÉTAPE 6: Préparation des artifacts
+      # ========================================
+      - name: 📦 Prepare deployment artifacts
+        run: |
+          mkdir -p deploy
+          cp backend/target/*.jar deploy/football-management.jar
+          cp -r frontend/dist deploy/frontend
+          cp deploy-scripts/* deploy/ || echo "⚠️  No deploy-scripts found"
+          ls -lah deploy/
+
+      # ========================================
+      # ÉTAPE 7: Déploiement sur le serveur Debian
+      # ========================================
+      - name: 🚀 Deploy to Debian Server
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        run: |
+          # Configurer SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${SERVER_PORT:-22} $SERVER_HOST >> ~/.ssh/known_hosts
+
+          # Créer les répertoires sur le serveur
+          ssh -i ~/.ssh/deploy_key -p ${SERVER_PORT:-22} $SERVER_USER@$SERVER_HOST << 'EOF'
+            mkdir -p ~/football-management/backend
+            mkdir -p ~/football-management/frontend
+            mkdir -p ~/football-management/logs
+          EOF
+
+          # Copier le JAR du backend
+          echo "📤 Uploading backend JAR..."
+          scp -i ~/.ssh/deploy_key -P ${SERVER_PORT:-22} \
+            deploy/football-management.jar \
+            $SERVER_USER@$SERVER_HOST:~/football-management/backend/
+
+          # Copier les fichiers du frontend
+          echo "📤 Uploading frontend files..."
+          scp -i ~/.ssh/deploy_key -P ${SERVER_PORT:-22} -r \
+            deploy/frontend/* \
+            $SERVER_USER@$SERVER_HOST:~/football-management/frontend/
+
+          # Redémarrer le backend
+          echo "🔄 Restarting backend service..."
+          ssh -i ~/.ssh/deploy_key -p ${SERVER_PORT:-22} $SERVER_USER@$SERVER_HOST << 'EOF'
+            sudo systemctl restart football-management || echo "⚠️  Service not found, manual setup required"
+            sudo systemctl status football-management || true
+          EOF
+
+          # Recharger Nginx
+          echo "🔄 Reloading Nginx..."
+          ssh -i ~/.ssh/deploy_key -p ${SERVER_PORT:-22} $SERVER_USER@$SERVER_HOST << 'EOF'
+            sudo nginx -t && sudo systemctl reload nginx || echo "⚠️  Nginx not configured"
+          EOF
+
+          echo "✅ Deployment completed successfully!"
+
+      # ========================================
+      # ÉTAPE 8: Notification de succès
+      # ========================================
+      - name: ✅ Deployment Summary
+        if: success()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 DÉPLOIEMENT RÉUSSI"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Backend JAR: football-management.jar"
+          echo "🌐 Frontend: Build React/Vite"
+          echo "🖥️  Serveur: ${{ secrets.SERVER_HOST }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

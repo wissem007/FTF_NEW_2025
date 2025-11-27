@@ -1,0 +1,74 @@
+# ========================================
+# Backend (Java/Maven/Spring Boot)
+# ========================================
+backend/target/
+backend/*.jar
+backend/*.war
+backend/*.ear
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Logs
+backend/logs/
+backend/*.log
+
+# ========================================
+# Frontend (React/Vite/Node)
+# ========================================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# ========================================
+# IDE / Éditeurs
+# ========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ========================================
+# Fichiers sensibles (NE JAMAIS COMMITTER)
+# ========================================
+*.env
+*.env.local
+*.env.production
+.env.*
+application-production.properties
+application-production.yml
+
+# Clés SSH
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+
+# Credentials
+credentials.json
+secrets.yml
+
+# ========================================
+# Système d'exploitation
+# ========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================================
+# Autres
+# ========================================
+*.class
+*.log
+*.tmp
+.cache/

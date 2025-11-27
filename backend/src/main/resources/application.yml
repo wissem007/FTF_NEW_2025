@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: football-management
+
+  # Configuration des fichiers statiques
+  web:
+    resources:
+      static-locations: classpath:/static/
+  mvc:
+    static-path-pattern: /**
+
+  # Configuration base de données avec multiple schemas
+  datasource:
+    url: jdbc:postgresql://51.91.204.154:5432/competition_db?currentSchema=sss_competition_db
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: none  
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        # Pour gérer les multiple schemas
+        default_schema: sss_competition_db
+    database: postgresql
+
+  # Désactiver la sécurité temporairement
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+# Configuration du serveur
+server:
+  port: 8082
+
+# Configuration logging
+logging:
+  level:
+    com.football.management: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Configuration JWT (pour plus tard)
+jwt:
+  secret: MaSuperCleJWTSecrete123456
+  expiration: 3600000	
+  logging:
+    level:
+      com.football.management: DEBUG
+      org.springframework.web: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      org.springframework.orm.jpa: DEBUG
+      org.springframework.transaction: DEBUG
+      root: INFO
